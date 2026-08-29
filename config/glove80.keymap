@@ -55,7 +55,7 @@
 #define LAYER_Keypad 2
 #define LAYER_Lower 3
 #define LAYER_Magic 4
-
+#define FACTORY_TEST 5
 /* To deal with the situation where there is no Lower layer, to keep &lower happy */
 #ifndef LAYER_Lower
 #define LAYER_Lower 0
@@ -86,27 +86,8 @@
     };
 };
 
-// layers
-#define DEFAULT 0
-#define LOWER 1
-#define MAGIC 2
-#define FACTORY_TEST 3
-#define QWERTY             0
-#define COLEMAK_DH         1
-#define C_GAME             2
-#define KEYPAD             3
-#define FUNCTION           4
-#define DEF_MOD            5
-#define CDH_MOD            6
-#define CORNE_COLEMAK_DH   7
-#define CORNE_QWERTY       8
-#define CORNE_KEYPAD       9
-#define CORNE_FUNCTION     10
-#define CORNE_NAV          11
-#define CORNE_DEF_MOD      12
-
-#define TD_HM_TAP_TERM     175
-#define TD_Z_TAP_TERM      250
+#define TD_HM_TAP_TERM       195
+#define TD_Z_TAP_TERM        250
 #define HM_TAP_TERM          180
 #define HM_TAP_2_TERM        190
 #define HM_TAP_3_TERM        190
@@ -135,7 +116,7 @@
             label = "LAYER_TAP_DANCE";
             #binding-cells = <0>;
             tapping-term-ms = <200>;
-            bindings = <&mo LOWER>, <&to LOWER>;
+            bindings = <&mo LAYER_Lower>, <&to LAYER_Lower>;
         };
 
         magic: magic_hold_tap {
@@ -294,7 +275,7 @@
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
             tapping-term-ms = <TD_Z_TAP_TERM>;
-            bindings = <&lt CORNE_KEYPAD Z>, <&kp RC(Z)>;
+            bindings = <&lt LAYER_Keypad Z>, <&kp RC(Z)>;
         };
 
         td_q_esc: tap_dance_q_escape {
@@ -303,7 +284,7 @@
             tapping-term-ms = <TD_HM_TAP_TERM>;
             bindings = <&kp Q>, <&kp ESC>;
         };
-
+/*
         td_qwerty: tap_dance_to_qwerty {
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
@@ -317,19 +298,20 @@
             tapping-term-ms = <TD_HM_TAP_TERM>;
             bindings = <&kp TILDE>, <&to COLEMAK_DH>;
         };
+*/
 
         td_corne_q: tap_dance_to_corne_qwerty {
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
             tapping-term-ms = <TD_HM_TAP_TERM>;
-            bindings = <&kp GRAVE>, <&to C_GAME>;
+            bindings = <&kp GRAVE>, <&to LAYER_Game>;
         };
 
         td_corne_c: tap_dance_to_corne_colemak {
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
             tapping-term-ms = <TD_HM_TAP_TERM>;
-            bindings = <&kp GRAVE>, <&to CORNE_COLEMAK_DH>;
+            bindings = <&kp GRAVE>, <&to LAYER_Base>;
         };
 
         td_corne_cw_nav: tap_dance_caps_corne {
@@ -403,40 +385,25 @@
         compatible = "zmk,keymap";
 
         default_layer {
-            // ---------------------------------------------------------------------------------------------------------------------------------
-            // |  F1   |  F2 |  F3 |  F4  |  F5  |                                                               |  F6   |  F7   |  F8  |   F9  |  F10 |
-            // |  =    |  1  |  2  |  3   |  4   |  5   |                                                 |  6   |   7   |   8   |  9   |   0   |   -  |
-            // |  TAB  |  Q  |  W  |  E   |  R   |  T   |                                                 |  Y   |   U   |   I   |  O   |   P   |   \  |
-            // |  ESC  |  A  |  S  |  D   |  F   |  G   |                                                 |  H   |   J   |   K   |  L   |   ;   |   '  |
-            // |   `   |  Z  |  X  |  C   |  V   |  B   | LSHFT | LCTRL | LOWER | | LGUI  | RCTRL | RSHFT |  N   |   M   |   ,   |  .   |   /   | PGUP |
-            // | MAGIC | HOME| END | LEFT | RIGHT|      | BSPC  | DEL   | LALT  | | RALT  | RET   | SPACE |      |  UP   | DOWN  |  [   |   ]   | PGDN |
 
             bindings = <
-            &kp F1                &kp F2         &kp F3        &kp F4        &kp F5                                                                                      &kp F6  &kp F7          &kp F8        &kp F9        &kp F10
-            &kp EQUAL             &kp N1         &kp N2        &kp N3        &kp N4           &kp N5                                                                     &kp N6  &kp N7          &kp N8        &kp N9        &kp N0         &kp MINUS
-            &kp TAB               &kp Q          &kp W         &kp F         &kp P            &kp B                                                                      &kp J   &kp L           &kp U         &kp Y         &kp SEMI       &kp BSLH
-            &kp ESC               &hm LCTRL A    &hm LGUI R    &hm LALT S    &hm LSHIFT T     &kp G                                                                      &kp M   &hm RSHIFT N    &hm RALT E    &hm RGUI I    &hm RCTRL O    &kp SQT
-            &kp GRAVE             &kp Z          &kp X         &kp C         &kp D            &kp V    &mo LAYER_Keypad   &kp LCTRL  &lower    &kp LGUI  &kp RCTRL  &kp RSHFT   &kp K   &kp H           &kp COMMA     &kp DOT       &kp FSLH       &kp RSHIFT
-            &magic LAYER_Magic 0  &kp HOME       &kp END       &kp LEFT      &kp RIGHT                 &kp BSPC           &td_corne_cw_nav    &kp LALT  &kp RALT  &lt LAYER_Lower ENTER   &kp SPACE           &kp UP          &kp DOWN      &kp LBKT      &kp RBKT       &kp PG_DN
+            &kp F1                &kp F2         &kp F3        &kp F4        &kp F5                                                                                                                        &kp F6          &kp F7        &kp F8        &kp F9        &kp F10
+            &kp EQUAL             &kp N1         &kp N2        &kp N3        &kp N4           &kp N5                                                                                               &kp N6  &kp N7          &kp N8        &kp N9        &kp N0         &kp MINUS
+            &kp TAB               &kp Q          &kp W         &kp F         &kp P            &kp B                                                                                                &kp J   &kp L           &kp U         &kp Y         &kp SEMI       &kp BSLH
+            &kp ESC               &hm LCTRL A    &hm LGUI R    &hm LALT S    &hm LSHIFT T     &kp G                                                                                                &kp M   &hm RSHIFT N    &hm RALT E    &hm RGUI I    &hm RCTRL O    &kp SQT
+            &kp GRAVE             &kp Z          &kp X         &kp C         &kp D            &kp V    &mo LAYER_Keypad   &kp LCTRL         &lower    &lower     &kp RCTRL             &kp RSHFT   &kp K   &kp H           &kp COMMA     &kp DOT       &kp FSLH       &kp RSHIFT
+            &magic LAYER_Magic 0  &kp HOME       &kp END       &kp LEFT      &kp RIGHT                 &kp BSPC           &td_corne_cw_nav  &kp LALT  &kp RALT   &lt LAYER_Lower ENTER   &kp SPACE           &kp UP          &kp DOWN      &kp LBKT      &kp RBKT       &kp PG_DN
             >;
         };
 
         game_layer {
-            // ---------------------------------------------------------------------------------------------------------------------------------
-            // |  F1   |  F2 |  F3 |  F4  |  F5  |                                                               |  F6   |  F7   |  F8  |   F9  |  F10 |
-            // |  =    |  1  |  2  |  3   |  4   |  5   |                                                 |  6   |   7   |   8   |  9   |   0   |   -  |
-            // |  TAB  |  Q  |  W  |  E   |  R   |  T   |                                                 |  Y   |   U   |   I   |  O   |   P   |   \  |
-            // |  ESC  |  A  |  S  |  D   |  F   |  G   |                                                 |  H   |   J   |   K   |  L   |   ;   |   '  |
-            // |   `   |  Z  |  X  |  C   |  V   |  B   | LSHFT | LCTRL | LOWER | | LGUI  | RCTRL | RSHFT |  N   |   M   |   ,   |  .   |   /   | PGUP |
-            // | MAGIC | HOME| END | LEFT | RIGHT|      | BSPC  | DEL   | LALT  | | RALT  | RET   | SPACE |      |  UP   | DOWN  |  [   |   ]   | PGDN |
-
             bindings = <
-            &kp F1                &kp F2         &kp F3        &kp F4        &kp F5                                                                                      &kp F6  &kp F7          &kp F8        &kp F9        &kp F10
-            &kp EQUAL             &kp N1         &kp N2        &kp N3        &kp N4           &kp N5                                                                     &kp N6  &kp N7          &kp N8        &kp N9        &kp N0         &kp MINUS
-            &hm LALT TAB          &kp Q          &kp W         &kp F         &kp P            &kp B                                                                      &kp J   &kp L           &kp U         &kp Y         &kp SEMI       &kp BSLH
-            &hm LCTRL ESC         &kp A          &kp R         &kp S         &hm LSHIFT T     &kp G                                                                      &kp M   &hm RSHIFT N    &hm RALT E    &hm RGUI I    &hm RCTRL O    &kp SQT
-            &kp LSHIFT            &kp Z          &kp X         &kp C         &kp D            &kp V    &mo LAYER_Keypad  &kp LCTRL  &lower    &kp LGUI  &kp RCTRL  &kp RSHFT   &kp K   &kp H           &kp COMMA     &kp DOT       &kp FSLH       &kp RSHIFT
-            &magic LAYER_Magic 0  &kp HOME       &kp END       &kp LEFT      &kp RIGHT                 &kp BSPC          &kp SPACE  &kp LALT  &kp RALT  &lt LAYER_Lower ENTER    &kp SPACE           &kp UP          &kp DOWN      &kp LBKT      &kp RBKT       &kp PG_DN
+            &kp F1                &kp F2         &kp F3        &kp F4        &kp F5                                                                                                                    &kp F6        &kp F7       &kp F8        &kp F9        &kp F10
+            &kp EQUAL             &kp N1         &kp N2        &kp N3        &kp N4           &kp N5                                                                                       &kp N6      &kp N7        &kp N8       &kp N9        &kp N0         &kp MINUS
+            &hm LALT TAB          &kp Q          &kp W         &kp F         &kp P            &kp B                                                                                        &kp J       &kp L         &kp U        &kp Y         &kp SEMI       &kp BSLH
+            &hm LCTRL ESC         &kp A          &kp R         &kp S         &hm LSHIFT T     &kp G                                                                                        &kp M       &hm RSHIFT N  &hm RALT E   &hm RGUI I    &hm RCTRL O    &kp SQT
+            &kp LSHIFT            &kp Z          &kp X         &kp C         &kp D            &kp V    &mo LAYER_Keypad  &kp LCTRL  &lower    &lower    &kp RCTRL              &kp RSHFT   &kp K       &kp H         &kp COMMA    &kp DOT       &kp FSLH       &kp RSHIFT
+            &magic LAYER_Magic 0  &kp HOME       &kp END       &kp LEFT      &kp RIGHT                 &kp BSPC          &kp SPACE  &kp LALT  &kp RALT  &lt LAYER_Lower ENTER  &kp SPACE               &kp UP        &kp DOWN     &kp LBKT      &kp RBKT       &kp PG_DN
             >;
         };
         
@@ -450,34 +417,34 @@
             // | MAGIC | HOME| END | LEFT | RIGHT|      | BSPC  | DEL   | LALT  | | RALT  | RET   | SPACE |      |  UP   | DOWN  |  [   |   ]   | PGDN |
 
             bindings = <
-            &kp F1                &kp F2         &kp F3        &kp F4        &kp F5                                                                                         &kp F6    &kp F7           &kp F8          &kp F9          &kp F10
-            &kp EQUAL             &kp N1         &kp N2        &kp N3        &kp N4           &kp N5                                                                        &kp N6    &kp N7           &kp N8          &kp N9          &kp N0         &kp MINUS
-            &hm LALT TAB          &kp Q          &kp W         &kp F         &kp P            &kp B                                                                         &kp J     &kp L            &kp U           &kp Y           &kp SEMI       &kp BSLH
-            &hm LCTRL ESC         &kp DQT        &kp TILDE    &kp GRAVE      &hm LSHIFT LBRC  &kp LBKT                                                                      &kp RBKT  &hm RSHIFT RBRC  &hm RALT MINUS  &hm RGUI UNDER  &hm RCTRL SQT  &kp SQT
-            &kp LSHIFT            &trans         &kp X         &trans        &kp PIPE         &kp BSLH    &kp KEYPAD  &kp LCTRL  &lower    &kp LGUI  &kp RCTRL  &kp RSHFT   &kp FSLH  &kp EQUAL        &kp COMMA       &kp DOT         &kp FSLH       &kp RSHIFT
-            &magic LAYER_Magic 0  &kp HOME       &kp END       &kp LEFT      &kp RIGHT                 &kp BSPC    &kp SPACE  &kp LALT  &kp RALT  &kp RET    &kp SPACE                &kp UP           &kp DOWN        &kp LBKT        &kp RBKT       &kp PG_DN
+            &kp F1                &kp F2         &kp F3        &kp F4        &kp F5                                                                                                  &kp F6           &kp F7          &kp F8          &kp F9          &kp F10
+            &kp EQUAL             &kp N1         &kp N2        &kp N3        &kp N4           &kp N5                                                                       &kp N6    &kp N7           &kp N8          &kp N9          &kp N0         &kp MINUS
+            &hm LALT TAB          &kp N1         &kp N2        &kp N3        &kp N4           &kp N5                                                                       &kp N6    &kp N7           &kp N8          &kp N9          &kp N0         &kp BSLH
+            &hm LCTRL ESC         &kp DQT        &kp TILDE    &kp GRAVE      &hm LSHIFT LBRC  &kp LBKT                                                                     &kp RBKT  &hm RSHIFT RBRC  &hm RALT MINUS  &hm RGUI UNDER  &hm RCTRL SQT  &kp SQT
+            &kp LSHIFT            &trans         &kp X         &trans        &kp PIPE         &kp BSLH   &trans    &kp LCTRL  &lower    &kp LGUI  &kp RCTRL  &kp RSHFT   &kp FSLH  &kp EQUAL        &kp COMMA       &kp DOT         &kp FSLH       &kp RSHIFT
+            &magic LAYER_Magic 0  &kp HOME       &kp END       &kp LEFT      &kp RIGHT                   &kp BSPC  &kp SPACE  &kp LALT  &kp RALT  &kp RET    &kp SPACE             &kp UP           &kp DOWN        &kp LBKT        &kp RBKT       &kp PG_DN
             >;
         };
         
         lower_layer {
             bindings = <
-            &kp C_BRI_DN      &kp C_BRI_UP        &kp C_PREV      &kp C_NEXT      &kp C_PP                                                                                                           &kp C_MUTE   &kp C_VOL_DN &kp C_VOL_UP  &none         &kp PAUSE_BREAK
-            &trans            &kp LG(N1)          &kp LG(N2)      &kp LG(N3)      &kp LG(N4)      &kp LG(N5)                                                                            &kp LG(N6)     &kp LG(N7)    &kp LG(N8)   &kp LG(N9)    &kp LG(N0)    &kp  PSCRN
-            &trans            &none               &none           &kp UP          &none           &kp END                                                                               &kp DOWN     &kp RIGHT     &kp UP       &kp RIGHT     &kp PG_UP     &kp SLCK
-            &trans            &none               &kp LEFT        &kp DOWN        &kp RIGHT       &kp PG_UP                                                                             &kp RIGHT    &kp LEFT     &kp HOME     &kp END       &kp PG_DN     &none
-            &trans            &kp K_CMENU         &none           &kp F11         &kp F12         &kp PG_DN       &trans      &trans      &to DEFAULT &trans      &trans      &trans    &kp UP       &kp LEFT    &kp KP_N2    &kp KP_N3     &kp KP_ENTER    &trans
-            &trans            &kp CAPS            &kp INS         &kp F11         &kp F12                         &trans      &trans      &trans      &trans      &trans      &trans                 &kp KP_N0    &kp KP_N0    &kp KP_DOT    &kp KP_ENTER    &trans
+            &kp C_BRI_DN      &kp C_BRI_UP        &kp C_PREV      &kp C_NEXT      &kp C_PP                                                                                                        &kp C_MUTE   &kp C_VOL_DN &kp C_VOL_UP  &none         &kp PAUSE_BREAK
+            &trans            &kp LG(N1)          &kp LG(N2)      &kp LG(N3)      &kp LG(N4)      &kp LG(N5)                                                                         &kp LG(N6)   &kp LG(N7)   &kp LG(N8)   &kp LG(N9)    &kp LG(N0)    &kp  PSCRN
+            &trans            &none               &none           &kp UP          &none           &kp END                                                                            &kp DOWN     &kp RIGHT    &kp UP       &kp RIGHT     &kp PG_UP     &kp SLCK
+            &trans            &none               &kp LEFT        &kp DOWN        &kp RIGHT       &kp PG_UP                                                                          &kp RIGHT    &kp LEFT     &kp HOME     &kp END       &kp PG_DN     &none
+            &trans            &kp K_CMENU         &none           &kp F11         &kp F12         &kp PG_DN   &trans      &trans      &to LAYER_Base &trans      &trans      &trans  &kp UP       &kp LEFT     &kp KP_N2    &kp KP_N3     &kp KP_ENTER  &trans
+            &trans            &kp CAPS            &kp INS         &kp F11         &kp F12                     &trans      &trans      &trans         &trans      &trans      &trans               &kp KP_N0    &kp KP_N0    &kp KP_DOT    &kp KP_ENTER  &trans
             >;
         };
 
         magic_layer {
             bindings = <
             &bt BT_CLR        &none               &none           &none           &none                                                                                                           &to LAYER_Game      &to LAYER_Base      &none      &to LAYER_Base      &bt BT_CLR_ALL
-            &none             &none               &none           &none           &none           &none                                                                                &none      &none      &none      &none      &none      &none
-            &none             &rgb_ug RGB_SPI     &rgb_ug RGB_SAI &rgb_ug RGB_HUI &rgb_ug RGB_BRI &rgb_ug RGB_TOG                                                                      &none      &none      &none      &none      &none      &none
-            &bootloader       &rgb_ug RGB_SPD     &rgb_ug RGB_SAD &rgb_ug RGB_HUD &rgb_ug RGB_BRD &rgb_ug RGB_EFF                                                                      &none      &none      &none      &none      &none      &bootloader
-            &sys_reset        &none               &none           &none           &none           &none           &bt_2     &bt_3     &none            &none     &none     &none       &none      &none      &none      &none      &none      &sys_reset
-            &none             &none               &none           &none           &none                           &bt_0     &bt_1     &out OUT_USB     &none     &none     &none                  &none      &none      &none      &none      &to FACTORY_TEST
+            &none             &none               &none           &none           &none           &none                                                                                &none      &none               &none      &none      &none      &none
+            &none             &rgb_ug RGB_SPI     &rgb_ug RGB_SAI &rgb_ug RGB_HUI &rgb_ug RGB_BRI &rgb_ug RGB_TOG                                                                      &none      &none               &none      &none      &none      &none
+            &bootloader       &rgb_ug RGB_SPD     &rgb_ug RGB_SAD &rgb_ug RGB_HUD &rgb_ug RGB_BRD &rgb_ug RGB_EFF                                                                      &none      &none               &none      &none      &none      &bootloader
+            &sys_reset        &none               &none           &none           &none           &none           &bt_2     &bt_3     &none            &none     &none     &none       &none      &none               &none      &none      &none      &sys_reset
+            &none             &none               &none           &none           &none                           &bt_0     &bt_1     &out OUT_USB     &none     &none     &none                  &none               &none      &none      &none      &to FACTORY_TEST
             >;
         };
 
