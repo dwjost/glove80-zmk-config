@@ -13,11 +13,118 @@
 
 #define HYPER LC(LS(LG(LALT)))
 
+#pragma once
+
+#define ZMK_HELPER_STRINGIFY(x) #x
+
+// Preprocessor mechanism to overload macros, cf. https://stackoverflow.com/a/27051616/6114651
+#define VARGS_(_10, _9, _8, _7, _6, _5, _4, _3, _2, _1, N, ...) N
+#define VARGS(...) VARGS_(__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+#define CONCAT_(a, b) a##b
+#define CONCAT(a, b) CONCAT_(a, b)
+
+#define ZMK_BEHAVIOR_CORE_tap_dance  \
+    compatible = "zmk,behavior-tap-dance"; \
+    #binding-cells = <0>
+
+#define ZMK_BEHAVIOR(name, type, ...) \
+    name: name { \
+        ZMK_BEHAVIOR_CORE_ ## type; \
+        __VA_ARGS__ \
+    };
+
+#define ZMK_TAP_DANCE(name, ...) \
+    ZMK_BEHAVIOR(name, tap_dance, __VA_ARGS__)
+
+#define ZMK_TD_LAYER(name, layer) \
+    ZMK_TAP_DANCE(name, \
+        tapping-term-ms = <200>; \
+        bindings = <&mo layer>, <&to layer>; \
+)
+
+/* Environment and metadata defines */
+#define KB_TYPE_GLOVE_80 1
+#define KB_TYPE_GO_60    2
+
+#define KB_TYPE          KB_TYPE_GLOVE_80
+#define EDITOR_HOST_OS   'L'
+
+/* Automatically generated layer name defines */
+#define LAYER_Base 0
+#define LAYER_Game 1
+#define LAYER_Keypad 2
+#define LAYER_Lower 3
+#define LAYER_Magic 4
+
+/* To deal with the situation where there is no Lower layer, to keep &lower happy */
+#ifndef LAYER_Lower
+#define LAYER_Lower 0
+#endif
+
+/* Custom Device-tree */
+
+
+/* Input Listeners */
+
+
+/* System behavior and Macros */
+/ {
+    behaviors {
+        ZMK_TD_LAYER(lower, LAYER_Lower)
+    };
+};
+
+/ {
+    macros {
+        rgb_ug_status_macro: rgb_ug_status_macro {
+            label = "RGB_UG_STATUS";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings
+                = <&rgb_ug RGB_STATUS>;
+        };
+    };
+};
+
 // layers
 #define DEFAULT 0
 #define LOWER 1
 #define MAGIC 2
 #define FACTORY_TEST 3
+#define QWERTY             0
+#define COLEMAK_DH         1
+#define C_GAME             2
+#define KEYPAD             3
+#define FUNCTION           4
+#define DEF_MOD            5
+#define CDH_MOD            6
+#define CORNE_COLEMAK_DH   7
+#define CORNE_QWERTY       8
+#define CORNE_KEYPAD       9
+#define CORNE_FUNCTION     10
+#define CORNE_NAV          11
+#define CORNE_DEF_MOD      12
+
+#define TD_HM_TAP_TERM     175
+#define TD_Z_TAP_TERM      250
+#define HM_TAP_TERM          180
+#define HM_TAP_2_TERM        190
+#define HM_TAP_3_TERM        190
+#define HM_TAP_4_TERM        200
+#define HM_TAP_5_TERM        250
+#define HM_QUICK_TAP_TERM    150
+#define HM_QUICK_TAP_2_TERM  150
+#define HM_QUICK_TAP_3_TERM  150
+#define HM_QUICK_TAP_4_TERM  150
+#define HM_QUICK_TAP_5_TERM  150
+#define HM_REQUIRE_IDLE_MS   125
+#define HM_REQUIRE_IDLE_2_MS 125
+#define HM_REQUIRE_IDLE_3_MS 125
+#define HM_REQUIRE_IDLE_4_MS 125
+#define HM_REQUIRE_IDLE_5_MS 125
+#define HM_REQUIRE_IDLE_MS 125
+#define TD_CW_TAP_TERM     190
+#define LT_TAPPING_TERM    100
 
 / {
     behaviors {
@@ -41,15 +148,220 @@
         };
     };
 
-    macros {
-        rgb_ug_status_macro: rgb_ug_status_macro_0 {
-            label = "RGB_UG_STATUS";
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            bindings
-                = <&rgb_ug RGB_STATUS>;
+        hm: homerow_mods {
+            compatible = "zmk,behavior-hold-tap";
+            label = "HOMEROW_MODS";
+            #binding-cells = <2>;
+            tapping-term-ms = <HM_TAP_TERM>;
+            quick_tap_ms = <HM_QUICK_TAP_TERM>;
+            require-prior-idle-ms = <HM_REQUIRE_IDLE_MS>;
+            flavor = "balanced";
+            bindings = <&kp>, <&kp>;
+        };
+/* TODO: Fix to work with Glove80
+        hml2: homerow_mods_l_2 {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping-term-ms = <HM_TAP_2_TERM>;
+            quick-tap-ms = <HM_QUICK_TAP_2_TERM>;
+            require-prior-idle-ms = <HM_REQUIRE_IDLE_2_MS>;
+            flavor = "balanced";
+            bindings = <&kp>, <&kp>;
+            hold-trigger-key-positions = <KEYS_L THUMBS>;
+            hold-trigger-on-release;
         };
 
+        hml3: homerow_mods_l_3 {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping-term-ms = <HM_TAP_3_TERM>;
+            quick-tap-ms = <HM_QUICK_TAP_3_TERM>;
+            require-prior-idle-ms = <HM_REQUIRE_IDLE_3_MS>;
+            flavor = "balanced";
+            bindings = <&kp>, <&kp>;
+            hold-trigger-key-positions = <KEYS_L THUMBS>;
+            hold-trigger-on-release;
+        };
+
+        hml4: homerow_mods_l_4 {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping-term-ms = <HM_TAP_4_TERM>;
+            quick-tap-ms = <HM_QUICK_TAP_4_TERM>;
+            require-prior-idle-ms = <HM_REQUIRE_IDLE_4_MS>;
+            flavor = "balanced";
+            bindings = <&kp>, <&kp>;
+            hold-trigger-key-positions = <KEYS_L THUMBS>;
+            hold-trigger-on-release;
+        };
+
+        hml5: homerow_mods_l_5 {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping-term-ms = <HM_TAP_5_TERM>;
+            quick-tap-ms = <HM_QUICK_TAP_5_TERM>;
+            require-prior-idle-ms = <HM_REQUIRE_IDLE_5_MS>;
+            flavor = "balanced";
+            bindings = <&kp>, <&kp>;
+            hold-trigger-key-positions = <KEYS_L THUMBS>;
+            hold-trigger-on-release;
+        };
+        
+        hmr2: homerow_mods_r_2 {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping-term-ms = <HM_TAP_2_TERM>;
+            quick-tap-ms = <HM_QUICK_TAP_2_TERM>;
+            require-prior-idle-ms = <HM_REQUIRE_IDLE_2_MS>;
+            flavor = "balanced";
+            bindings = <&kp>, <&kp>;
+            hold-trigger-key-positions = <KEYS_R THUMBS>;
+            hold-trigger-on-release;
+        };
+
+        hmr3: homerow_mods_r_3 {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping-term-ms = <HM_TAP_3_TERM>;
+            quick-tap-ms = <HM_QUICK_TAP_3_TERM>;
+            require-prior-idle-ms = <HM_REQUIRE_IDLE_3_MS>;
+            flavor = "balanced";
+            bindings = <&kp>, <&kp>;
+            hold-trigger-key-positions = <KEYS_R THUMBS>;
+            hold-trigger-on-release;
+        };
+
+        hmr4: homerow_mods_r_4 {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping-term-ms = <HM_TAP_4_TERM>;
+            quick-tap-ms = <HM_QUICK_TAP_4_TERM>;
+            require-prior-idle-ms = <HM_REQUIRE_IDLE_4_MS>;
+            flavor = "balanced";
+            bindings = <&kp>, <&kp>;
+            hold-trigger-key-positions = <KEYS_R THUMBS>;
+            hold-trigger-on-release;
+        };
+
+        hmr5: homerow_mods_r_5 {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping-term-ms = <HM_TAP_5_TERM>;
+            quick-tap-ms = <HM_QUICK_TAP_5_TERM>;
+            require-prior-idle-ms = <HM_REQUIRE_IDLE_5_MS>;
+            flavor = "balanced";
+            bindings = <&kp>, <&kp>;
+            hold-trigger-key-positions = <KEYS_R THUMBS>;
+            hold-trigger-on-release;
+        };
+*/
+        td_hm_a: tap_dance_hm_a_lctrl {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <TD_HM_TAP_TERM>;
+            bindings = <&hm LCTRL A>, <&kp LC(A)>;
+        };
+
+        td_hm_j: tap_dance_hm_j_shift {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <TD_HM_TAP_TERM>;
+            bindings = <&hm RSHIFT J>, <&kp J>;
+        };
+
+        td_hm_k: tap_dance_hm_k_alt {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <HM_TAP_TERM>;
+            bindings = <&hm RALT K>, <&kp K>;
+        };
+
+        td_hm_l: tap_dance_hm_l_gui {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <TD_HM_TAP_TERM>;
+            bindings = <&hm RGUI L>, <&kp L>;
+        };
+
+        td_v: tap_dance_v_shift_v {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <TD_HM_TAP_TERM>;
+            bindings = <&kp V>, <&kp LS(V)>;
+        };
+
+        td_z: tap_dance_z_ctrl_z {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <TD_Z_TAP_TERM>;
+            bindings = <&lt CORNE_KEYPAD Z>, <&kp RC(Z)>;
+        };
+
+        td_q_esc: tap_dance_q_escape {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <TD_HM_TAP_TERM>;
+            bindings = <&kp Q>, <&kp ESC>;
+        };
+
+        td_qwerty: tap_dance_to_qwerty {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <TD_HM_TAP_TERM>;
+            bindings = <&none>, <&to QWERTY>;
+        };
+
+        td_colemak: tap_dance_to_colemake {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <TD_HM_TAP_TERM>;
+            bindings = <&kp TILDE>, <&to COLEMAK_DH>;
+        };
+
+        td_corne_q: tap_dance_to_corne_qwerty {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <TD_HM_TAP_TERM>;
+            bindings = <&kp GRAVE>, <&to C_GAME>;
+        };
+
+        td_corne_c: tap_dance_to_corne_colemak {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <TD_HM_TAP_TERM>;
+            bindings = <&kp GRAVE>, <&to CORNE_COLEMAK_DH>;
+        };
+
+        td_corne_cw_nav: tap_dance_caps_corne {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <TD_CW_TAP_TERM>;
+            bindings = <&lt LAYER_Lower SPACE>, <&caps_word>;
+        };
+/* TODO: Get working with Glove*)
+        mm_ms_u: mouse_move_scroll_up {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&mmv MOVE_UP>, <&msc SCRL_UP>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+        mm_ms_d: mouse_move_scroll_down {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&mmv MOVE_DOWN>, <&msc SCRL_DOWN>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+        mm_ms_l: mouse_move_scroll_left {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&mmv MOVE_LEFT>, <&msc SCRL_LEFT>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+        mm_ms_r: mouse_move_scroll_right {
+            compatible = "zmk,behavior-mod-morph"; #binding-cells = <0>; bindings = <&mmv MOVE_RIGHT>, <&msc SCRL_RIGHT>; mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+*/
+    macros {
         bt_0: bt_profile_macro_0 {
             label = "BT_0";
             compatible = "zmk,behavior-macro";
@@ -100,21 +412,59 @@
             // | MAGIC | HOME| END | LEFT | RIGHT|      | BSPC  | DEL   | LALT  | | RALT  | RET   | SPACE |      |  UP   | DOWN  |  [   |   ]   | PGDN |
 
             bindings = <
-            &kp F1         &kp F2   &kp F3      &kp F4      &kp F5                                                                                         &kp F6  &kp F7      &kp F8      &kp F9      &kp F10
-            &kp EQUAL      &kp N1   &kp N2      &kp N3      &kp N4      &kp N5                                                                     &kp N6  &kp N7  &kp N8      &kp N9      &kp N0      &kp MINUS
-            &kp TAB        &kp Q    &kp W       &kp E       &kp R       &kp T                                                                      &kp Y   &kp U   &kp I       &kp O       &kp P       &kp BSLH
-            &kp ESC        &kp A    &kp S       &kp D       &kp F       &kp G                                                                      &kp H   &kp J   &kp K       &kp L       &kp SEMI    &kp SQT
-            &kp GRAVE      &kp Z    &kp X       &kp C       &kp V       &kp B   &kp LSHFT   &kp LCTRL   &layer_td  &kp LGUI  &kp RCTRL &kp RSHFT   &kp N   &kp M   &kp COMMA   &kp DOT     &kp FSLH    &kp PG_UP
-            &magic MAGIC 0 &kp HOME &kp END     &kp LEFT    &kp RIGHT           &kp BSPC    &kp DEL     &kp LALT   &kp RALT  &kp RET   &kp SPACE           &kp UP  &kp DOWN    &kp LBKT    &kp RBKT    &kp PG_DN
+            &kp F1                &kp F2         &kp F3        &kp F4        &kp F5                                                                                      &kp F6  &kp F7          &kp F8        &kp F9        &kp F10
+            &kp EQUAL             &kp N1         &kp N2        &kp N3        &kp N4           &kp N5                                                                     &kp N6  &kp N7          &kp N8        &kp N9        &kp N0         &kp MINUS
+            &kp TAB               &kp Q          &kp W         &kp F         &kp P            &kp B                                                                      &kp J   &kp L           &kp U         &kp Y         &kp SEMI       &kp BSLH
+            &kp ESC               &hm LCTRL A    &hm LGUI R    &hm LALT S    &hm LSHIFT T     &kp G                                                                      &kp M   &hm RSHIFT N    &hm RALT E    &hm RGUI I    &hm RCTRL O    &kp SQT
+            &kp GRAVE             &kp Z          &kp X         &kp C         &kp D            &kp V    &mo LAYER_Keypad   &kp LCTRL  &lower    &kp LGUI  &kp RCTRL  &kp RSHFT   &kp K   &kp H           &kp COMMA     &kp DOT       &kp FSLH       &kp RSHIFT
+            &magic LAYER_Magic 0  &kp HOME       &kp END       &kp LEFT      &kp RIGHT                 &kp BSPC           &td_corne_cw_nav    &kp LALT  &kp RALT  &lt LAYER_Lower ENTER   &kp SPACE           &kp UP          &kp DOWN      &kp LBKT      &kp RBKT       &kp PG_DN
             >;
         };
 
+        game_layer {
+            // ---------------------------------------------------------------------------------------------------------------------------------
+            // |  F1   |  F2 |  F3 |  F4  |  F5  |                                                               |  F6   |  F7   |  F8  |   F9  |  F10 |
+            // |  =    |  1  |  2  |  3   |  4   |  5   |                                                 |  6   |   7   |   8   |  9   |   0   |   -  |
+            // |  TAB  |  Q  |  W  |  E   |  R   |  T   |                                                 |  Y   |   U   |   I   |  O   |   P   |   \  |
+            // |  ESC  |  A  |  S  |  D   |  F   |  G   |                                                 |  H   |   J   |   K   |  L   |   ;   |   '  |
+            // |   `   |  Z  |  X  |  C   |  V   |  B   | LSHFT | LCTRL | LOWER | | LGUI  | RCTRL | RSHFT |  N   |   M   |   ,   |  .   |   /   | PGUP |
+            // | MAGIC | HOME| END | LEFT | RIGHT|      | BSPC  | DEL   | LALT  | | RALT  | RET   | SPACE |      |  UP   | DOWN  |  [   |   ]   | PGDN |
+
+            bindings = <
+            &kp F1                &kp F2         &kp F3        &kp F4        &kp F5                                                                                      &kp F6  &kp F7          &kp F8        &kp F9        &kp F10
+            &kp EQUAL             &kp N1         &kp N2        &kp N3        &kp N4           &kp N5                                                                     &kp N6  &kp N7          &kp N8        &kp N9        &kp N0         &kp MINUS
+            &hm LALT TAB          &kp Q          &kp W         &kp F         &kp P            &kp B                                                                      &kp J   &kp L           &kp U         &kp Y         &kp SEMI       &kp BSLH
+            &hm LCTRL ESC         &kp A          &kp R         &kp S         &hm LSHIFT T     &kp G                                                                      &kp M   &hm RSHIFT N    &hm RALT E    &hm RGUI I    &hm RCTRL O    &kp SQT
+            &kp LSHIFT            &kp Z          &kp X         &kp C         &kp D            &kp V    &mo LAYER_Keypad  &kp LCTRL  &lower    &kp LGUI  &kp RCTRL  &kp RSHFT   &kp K   &kp H           &kp COMMA     &kp DOT       &kp FSLH       &kp RSHIFT
+            &magic LAYER_Magic 0  &kp HOME       &kp END       &kp LEFT      &kp RIGHT                 &kp BSPC          &kp SPACE  &kp LALT  &kp RALT  &lt LAYER_Lower ENTER    &kp SPACE           &kp UP          &kp DOWN      &kp LBKT      &kp RBKT       &kp PG_DN
+            >;
+        };
+        
+        keypad_layer {
+            // ---------------------------------------------------------------------------------------------------------------------------------
+            // |  F1   |  F2 |  F3 |  F4  |  F5  |                                                               |  F6   |  F7   |  F8  |   F9  |  F10 |
+            // |  =    |  1  |  2  |  3   |  4   |  5   |                                                 |  6   |   7   |   8   |  9   |   0   |   -  |
+            // |  TAB  |  Q  |  W  |  E   |  R   |  T   |                                                 |  Y   |   U   |   I   |  O   |   P   |   \  |
+            // |  ESC  |  A  |  S  |  D   |  F   |  G   |                                                 |  H   |   J   |   K   |  L   |   ;   |   '  |
+            // |   `   |  Z  |  X  |  C   |  V   |  B   | LSHFT | LCTRL | LOWER | | LGUI  | RCTRL | RSHFT |  N   |   M   |   ,   |  .   |   /   | PGUP |
+            // | MAGIC | HOME| END | LEFT | RIGHT|      | BSPC  | DEL   | LALT  | | RALT  | RET   | SPACE |      |  UP   | DOWN  |  [   |   ]   | PGDN |
+
+            bindings = <
+            &kp F1                &kp F2         &kp F3        &kp F4        &kp F5                                                                                         &kp F6    &kp F7           &kp F8          &kp F9          &kp F10
+            &kp EQUAL             &kp N1         &kp N2        &kp N3        &kp N4           &kp N5                                                                        &kp N6    &kp N7           &kp N8          &kp N9          &kp N0         &kp MINUS
+            &hm LALT TAB          &kp Q          &kp W         &kp F         &kp P            &kp B                                                                         &kp J     &kp L            &kp U           &kp Y           &kp SEMI       &kp BSLH
+            &hm LCTRL ESC         &kp DQT        &kp TILDE    &kp GRAVE      &hm LSHIFT LBRC  &kp LBKT                                                                      &kp RBKT  &hm RSHIFT RBRC  &hm RALT MINUS  &hm RGUI UNDER  &hm RCTRL SQT  &kp SQT
+            &kp LSHIFT            &trans         &kp X         &trans        &kp PIPE         &kp BSLH    &kp KEYPAD  &kp LCTRL  &lower    &kp LGUI  &kp RCTRL  &kp RSHFT   &kp FSLH  &kp EQUAL        &kp COMMA       &kp DOT         &kp FSLH       &kp RSHIFT
+            &magic LAYER_Magic 0  &kp HOME       &kp END       &kp LEFT      &kp RIGHT                 &kp BSPC    &kp SPACE  &kp LALT  &kp RALT  &kp RET    &kp SPACE                &kp UP           &kp DOWN        &kp LBKT        &kp RBKT       &kp PG_DN
+            >;
+        };
+        
         lower_layer {
             bindings = <
-            &kp C_BRI_DN      &kp C_BRI_UP        &kp C_PREV      &kp C_NEXT      &kp C_PP                                                                                                           &kp C_MUTE   &kp C_VOL_DN &kp C_VOL_UP  &none           &kp PAUSE_BREAK
-            &trans            &none               &none           &none           &none           &kp HOME                                                                              &kp LPAR     &kp KP_NUM   &kp KP_EQUAL &kp KP_DIVIDE &kp KP_MULTIPLY &kp PSCRN
-            &trans            &none               &none           &kp UP          &none           &kp END                                                                               &kp RPAR     &kp KP_N7    &kp KP_N8    &kp KP_N9     &kp KP_MINUS    &kp SLCK
-            &trans            &none               &kp LEFT        &kp DOWN        &kp RIGHT       &kp PG_UP                                                                             &kp PRCNT    &kp KP_N4    &kp KP_N5    &kp KP_N6     &kp KP_PLUS     &none
+            &kp C_BRI_DN      &kp C_BRI_UP        &kp C_PREV      &kp C_NEXT      &kp C_PP                                                                                                           &kp C_MUTE   &kp C_VOL_DN &kp C_VOL_UP  &none         &kp PAUSE_BREAK
+            &trans            &kp LG(N1)          &kp LG(N2)      &kp LG(N3)      &kp LG(N4)      &kp LG(N5)                                                                            &kp DOWN     &kp RIGHT    &kp LG(N8)   &kp LG(N9)    &kp LG(N0)    &kp  PSCRN
+            &trans            &none               &none           &kp UP          &none           &kp END                                                                               &kp LEFT     &kp DOWN     &kp UP       &kp RIGHT     &kp PG_UP     &kp SLCK
+            &trans            &none               &kp LEFT        &kp DOWN        &kp RIGHT       &kp PG_UP                                                                             &kp UP       &kp LEFT     &kp HOME     &kp END       &kp PG_DN     &none
             &trans            &kp K_CMENU         &none           &kp F11         &kp F12         &kp PG_DN       &trans      &trans      &to DEFAULT &trans      &trans      &trans    &kp COMMA    &kp KP_N1    &kp KP_N2    &kp KP_N3     &kp KP_ENTER    &trans
             &trans            &kp CAPS            &kp INS         &kp F11         &kp F12                         &trans      &trans      &trans      &trans      &trans      &trans                 &kp KP_N0    &kp KP_N0    &kp KP_DOT    &kp KP_ENTER    &trans
             >;
@@ -122,7 +472,7 @@
 
         magic_layer {
             bindings = <
-            &bt BT_CLR        &none               &none           &none           &none                                                                                                           &none      &none      &none      &none      &bt BT_CLR_ALL
+            &bt BT_CLR        &none               &none           &none           &none                                                                                                           &to LAYER_Game      &to LAYER_Base      &none      &to LAYER_Base      &bt BT_CLR_ALL
             &none             &none               &none           &none           &none           &none                                                                                &none      &none      &none      &none      &none      &none
             &none             &rgb_ug RGB_SPI     &rgb_ug RGB_SAI &rgb_ug RGB_HUI &rgb_ug RGB_BRI &rgb_ug RGB_TOG                                                                      &none      &none      &none      &none      &none      &none
             &bootloader       &rgb_ug RGB_SPD     &rgb_ug RGB_SAD &rgb_ug RGB_HUD &rgb_ug RGB_BRD &rgb_ug RGB_EFF                                                                      &none      &none      &none      &none      &none      &bootloader
