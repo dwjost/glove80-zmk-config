@@ -433,7 +433,7 @@
             &trans            &none               &none           &kp UP          &none           &kp END                                                                            &kp DOWN     &kp RIGHT    &kp UP       &kp RIGHT     &kp PG_UP     &kp SLCK
             &trans            &none               &kp LEFT        &kp DOWN        &kp RIGHT       &kp PG_UP                                                                          &kp RIGHT    &kp LEFT     &kp HOME     &kp END       &kp PG_DN     &none
             &trans            &kp K_CMENU         &none           &kp F11         &kp F12         &kp PG_DN   &trans      &trans      &to LAYER_Base &trans      &trans      &trans  &kp UP       &kp LEFT     &kp KP_N2    &kp KP_N3     &kp KP_ENTER  &trans
-            &trans            &kp CAPS            &kp INS         &kp F11         &kp F12                     &trans      &trans      &trans         &trans      &trans      &trans               &kp KP_N0    &kp KP_N0    &kp KP_DOT    &kp KP_ENTER  &trans
+            &trans            &kp CAPS            &kp INS         &kp F11         &kp F12                     &trans      &trans      &trans         &trans      &trans      &kp TAB              &kp KP_N0    &kp KP_N0    &kp KP_DOT    &kp KP_ENTER  &trans
             >;
         };
 
